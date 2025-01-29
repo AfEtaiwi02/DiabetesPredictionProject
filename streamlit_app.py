@@ -22,27 +22,20 @@ def load_data():
 
 df = load_data()
 
-# Multi-select box for displaying additional sections
-sections_to_show = st.multiselect(
-    "Select sections to view",
-    ["Dataset Overview", "Dataset Summary", "Missing Values", "Best Model Hyperparameters", "Model Performance"],
-    default=[]  # No sections are displayed by default
-)
+# Show Dataset Overview with a separate dropdown
+if st.checkbox("Show Dataset Overview"):
+    st.write("### Dataset Overview")
+    st.write(df.head())
 
-# Show Dataset Overview under an expander if selected
-if "Dataset Overview" in sections_to_show:
-    with st.expander("Dataset Overview"):
-        st.write(df.head())
+# Show Dataset Summary with a separate dropdown
+if st.checkbox("Show Dataset Summary"):
+    st.write("#### Dataset Summary")
+    st.text(df.describe())
 
-# Show Dataset Summary under an expander if selected
-if "Dataset Summary" in sections_to_show:
-    with st.expander("Dataset Summary"):
-        st.text(df.describe())
-
-# Show Missing Values under an expander if selected
-if "Missing Values" in sections_to_show:
-    with st.expander("Missing Values"):
-        st.text(df.isnull().sum())
+# Show Missing Values with a separate dropdown
+if st.checkbox("Show Missing Values"):
+    st.write("#### Missing Values")
+    st.text(df.isnull().sum())
 
 # Split dataset into features and target
 X = df.drop(columns=["Outcome"])  # Features
@@ -75,11 +68,10 @@ grid_search.fit(X_train_scaled, y_train)
 best_model = grid_search.best_estimator_
 best_accuracy = grid_search.best_score_
 
-# Show Best Model Hyperparameters under an expander if selected
-if "Best Model Hyperparameters" in sections_to_show:
-    with st.expander("Best Model Hyperparameters"):
-        st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
-        st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
+# Show Best Model Hyperparameters with a separate dropdown
+if st.checkbox("Show Best Model Hyperparameters"):
+    st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
+    st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
 
 # Model performance with best hyperparameters
 y_pred = best_model.predict(X_test_scaled)
@@ -87,17 +79,16 @@ test_accuracy = accuracy_score(y_test, y_pred)
 
 st.write(f"### Test Set Accuracy with Best Model: {test_accuracy * 100:.2f}%")
 
-# Show Model Performance under an expander if selected
-if "Model Performance" in sections_to_show:
-    with st.expander("Model Performance"):
-        st.subheader("Model Performance")
-        st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
-        conf_matrix = confusion_matrix(y_test, y_pred)
-        fig, ax = plt.subplots(figsize=(6, 6))
-        sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax)
-        ax.set_xlabel("Predicted")
-        ax.set_ylabel("True")
-        st.pyplot(fig)
+# Show Model Performance with a separate dropdown
+if st.checkbox("Show Model Performance"):
+    st.subheader("Model Performance")
+    st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax)
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("True")
+    st.pyplot(fig)
 
 # User Input Section for Prediction
 st.sidebar.header("Enter the patient's details")
