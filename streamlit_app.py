@@ -15,10 +15,11 @@ st.write("\n\n")
 st.info('Hey there! This app takes a set of features and predicts whether the patient has diabetes or not.')
 
 # Dataset Loading and Caching
-@st.cache
+@st.cache_data
 def load_data():
-    df = pd.read_csv("diabetes.csv")  # Modify this with the correct path if needed
+    df = pd.read_csv("diabetes.csv")
     return df
+
 
 df = load_data()
 
