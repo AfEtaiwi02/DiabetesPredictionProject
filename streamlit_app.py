@@ -22,13 +22,27 @@ def load_data():
 
 df = load_data()
 
-# Display dataset overview (for doctors or data-savvy users)
-st.write("### Dataset Overview")
-st.write(df.head())
-st.write("#### Dataset Summary")
-st.text(df.describe())
-st.write("#### Missing Values")
-st.text(df.isnull().sum())
+# Multi-select box for displaying additional sections
+sections_to_show = st.multiselect(
+    "Select sections to view",
+    ["Dataset Overview", "Dataset Summary", "Missing Values", "Best Model Hyperparameters", "Model Performance"],
+    default=["Dataset Overview", "Dataset Summary", "Missing Values", "Best Model Hyperparameters", "Model Performance"]
+)
+
+# Show Dataset Overview if selected
+if "Dataset Overview" in sections_to_show:
+    st.write("### Dataset Overview")
+    st.write(df.head())
+
+# Show Dataset Summary if selected
+if "Dataset Summary" in sections_to_show:
+    st.write("#### Dataset Summary")
+    st.text(df.describe())
+
+# Show Missing Values if selected
+if "Missing Values" in sections_to_show:
+    st.write("#### Missing Values")
+    st.text(df.isnull().sum())
 
 # Split dataset into features and target
 X = df.drop(columns=["Outcome"])  # Features
@@ -60,8 +74,11 @@ grid_search.fit(X_train_scaled, y_train)
 
 best_model = grid_search.best_estimator_
 best_accuracy = grid_search.best_score_
-st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
-st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
+
+# Show Best Model Hyperparameters if selected
+if "Best Model Hyperparameters" in sections_to_show:
+    st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
+    st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
 
 # Model performance with best hyperparameters
 y_pred = best_model.predict(X_test_scaled)
@@ -69,15 +86,16 @@ test_accuracy = accuracy_score(y_test, y_pred)
 
 st.write(f"### Test Set Accuracy with Best Model: {test_accuracy * 100:.2f}%")
 
-# Confusion Matrix Visualization
-st.subheader("Model Performance")
-st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
-conf_matrix = confusion_matrix(y_test, y_pred)
-fig, ax = plt.subplots(figsize=(6, 6))
-sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax)
-ax.set_xlabel("Predicted")
-ax.set_ylabel("True")
-st.pyplot(fig)
+# Show Model Performance if selected
+if "Model Performance" in sections_to_show:
+    st.subheader("Model Performance")
+    st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax)
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("True")
+    st.pyplot(fig)
 
 # User Input Section for Prediction
 st.sidebar.header("Enter the patient's details")
