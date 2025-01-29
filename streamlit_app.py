@@ -11,13 +11,12 @@ import matplotlib.pyplot as plt
 
 # Streamlit header and info
 st.title('Diabetes Prediction Machine Learning Project 🩸')
-st.write("\n\n\n\n")
+st.write("\n\n")
 st.info('Hey there! This app takes a set of features and predicts whether the patient has diabetes or not.')
 
 # Dataset Loading and Caching
 @st.cache
 def load_data():
-    # If dataset is stored locally
     df = pd.read_csv("diabetes.csv")  # Modify this with the correct path if needed
     return df
 
@@ -82,29 +81,43 @@ ax.set_xlabel("Predicted")
 ax.set_ylabel("True")
 st.pyplot(fig)
 
-# Allow user input for making predictions
-st.sidebar.write("Enter the patient's data to predict diabetes")
+# User Input Section for Prediction
+st.sidebar.header("Enter the patient's details to predict diabetes")
 
 # Sidebar for user input (adjust to your dataset's columns)
-pregnancies = st.sidebar.number_input("Pregnancies", min_value=0)
-glucose = st.sidebar.number_input("Glucose", min_value=0)
-blood_pressure = st.sidebar.number_input("Blood Pressure", min_value=0)
-skin_thickness = st.sidebar.number_input("Skin Thickness", min_value=0)
-insulin = st.sidebar.number_input("Insulin", min_value=0)
-bmi = st.sidebar.number_input("BMI", min_value=0.0)
-dpf = st.sidebar.number_input("Diabetes Pedigree Function", min_value=0.0)
-age = st.sidebar.number_input("Age", min_value=0)
+pregnancies = st.sidebar.number_input("Pregnancies", min_value=0, max_value=20, value=0, step=1)
+glucose = st.sidebar.number_input("Glucose", min_value=0, max_value=300, value=120, step=1)
+blood_pressure = st.sidebar.number_input("Blood Pressure", min_value=0, max_value=200, value=80, step=1)
+skin_thickness = st.sidebar.number_input("Skin Thickness", min_value=0, max_value=100, value=20, step=1)
+insulin = st.sidebar.number_input("Insulin", min_value=0, max_value=800, value=80, step=1)
+bmi = st.sidebar.number_input("BMI", min_value=0.0, max_value=50.0, value=30.0, step=0.1)
+dpf = st.sidebar.number_input("Diabetes Pedigree Function", min_value=0.0, max_value=2.5, value=0.5, step=0.01)
+age = st.sidebar.number_input("Age", min_value=18, max_value=120, value=30, step=1)
+
+# Display the input values in the main page
+st.write(f"### Input Data")
+st.write(f"Pregnancies: {pregnancies}")
+st.write(f"Glucose: {glucose}")
+st.write(f"Blood Pressure: {blood_pressure}")
+st.write(f"Skin Thickness: {skin_thickness}")
+st.write(f"Insulin: {insulin}")
+st.write(f"BMI: {bmi}")
+st.write(f"Diabetes Pedigree Function: {dpf}")
+st.write(f"Age: {age}")
 
 # Creating a DataFrame from the inputs
 user_input = np.array([[pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age]])
 user_input_scaled = scaler.transform(user_input)  # Scale user input
 
-# Predicting the outcome using the trained model
-prediction = best_model.predict(user_input_scaled)
+# Adding a "Predict" button to trigger the prediction
+if st.sidebar.button("Predict"):
+    # Predicting the outcome using the trained model
+    prediction = best_model.predict(user_input_scaled)
 
-# Display the result
-if prediction == 1:
-    st.write("### The model predicts that the patient has diabetes.")
-else:
-    st.write("### The model predicts that the patient does not have diabetes.")
-s
+    # Display the result with a user-friendly message
+    if prediction == 1:
+        st.write("### The model predicts that the patient has diabetes.")
+        st.success("The prediction indicates that the patient may have diabetes. Please consult a doctor for further examination.")
+    else:
+        st.write("### The model predicts that the patient does not have diabetes.")
+        st.success("The prediction indicates that the patient is less likely to have diabetes. However, maintaining a healthy lifestyle is important.")
