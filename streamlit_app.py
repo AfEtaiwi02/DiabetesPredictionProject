@@ -22,19 +22,16 @@ def load_data():
 
 df = load_data()
 
-# Show Dataset Overview with a separate dropdown
-if st.checkbox("Show Dataset Overview"):
-    st.write("### Dataset Overview")
+# Show Dataset Overview under an expander
+with st.expander("Dataset Overview"):
     st.write(df.head())
 
-# Show Dataset Summary with a separate dropdown
-if st.checkbox("Show Dataset Summary"):
-    st.write("#### Dataset Summary")
+# Show Dataset Summary under an expander
+with st.expander("Dataset Summary"):
     st.text(df.describe())
 
-# Show Missing Values with a separate dropdown
-if st.checkbox("Show Missing Values"):
-    st.write("#### Missing Values")
+# Show Missing Values under an expander
+with st.expander("Missing Values"):
     st.text(df.isnull().sum())
 
 # Split dataset into features and target
@@ -68,8 +65,8 @@ grid_search.fit(X_train_scaled, y_train)
 best_model = grid_search.best_estimator_
 best_accuracy = grid_search.best_score_
 
-# Show Best Model Hyperparameters with a separate dropdown
-if st.checkbox("Show Best Model Hyperparameters"):
+# Show Best Model Hyperparameters under an expander
+with st.expander("Best Model Hyperparameters"):
     st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
     st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
 
@@ -79,8 +76,8 @@ test_accuracy = accuracy_score(y_test, y_pred)
 
 st.write(f"### Test Set Accuracy with Best Model: {test_accuracy * 100:.2f}%")
 
-# Show Model Performance with a separate dropdown
-if st.checkbox("Show Model Performance"):
+# Show Model Performance under an expander
+with st.expander("Model Performance"):
     st.subheader("Model Performance")
     st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
     conf_matrix = confusion_matrix(y_test, y_pred)
