@@ -22,18 +22,6 @@ def load_data():
 
 df = load_data()
 
-# Show Dataset Overview under an expander
-with st.expander("Dataset Overview"):
-    st.write(df.head())
-
-# Show Dataset Summary under an expander
-with st.expander("Dataset Summary"):
-    st.text(df.describe())
-
-# Show Missing Values under an expander
-with st.expander("Missing Values"):
-    st.text(df.isnull().sum())
-
 # Split dataset into features and target
 X = df.drop(columns=["Outcome"])  # Features
 y = df["Outcome"]  # Target
@@ -54,6 +42,7 @@ LR.fit(X_train_scaled, y_train)
 y_predictions = LR.predict(X_test_scaled)
 accuracy = accuracy_score(y_test, y_predictions)
 
+# Display model accuracy and test accuracy upfront
 st.write(f"### Model Accuracy: {accuracy * 100:.2f}%")
 st.write("The model's accuracy indicates how often it correctly predicts the presence or absence of diabetes.")
 
@@ -65,22 +54,32 @@ grid_search.fit(X_train_scaled, y_train)
 best_model = grid_search.best_estimator_
 best_accuracy = grid_search.best_score_
 
-# Show Best Model Hyperparameters under an expander
+# Show Test Set Accuracy and Best Model Hyperparameters in their respective sections
+test_accuracy = accuracy_score(y_test, best_model.predict(X_test_scaled))
+st.write(f"### Test Set Accuracy with Best Model: {test_accuracy * 100:.2f}%")
+
+# Expander for Dataset Overview
+with st.expander("Dataset Overview"):
+    st.write(df.head())
+
+# Expander for Dataset Summary
+with st.expander("Dataset Summary"):
+    st.text(df.describe())
+
+# Expander for Missing Values
+with st.expander("Missing Values"):
+    st.text(df.isnull().sum())
+
+# Expander for Best Model Hyperparameters
 with st.expander("Best Model Hyperparameters"):
     st.write(f"### Best Accuracy from Grid Search: {best_accuracy * 100:.2f}%")
     st.write(f"### Best Model Hyperparameters: {grid_search.best_params_}")
 
-# Model performance with best hyperparameters
-y_pred = best_model.predict(X_test_scaled)
-test_accuracy = accuracy_score(y_test, y_pred)
-
-st.write(f"### Test Set Accuracy with Best Model: {test_accuracy * 100:.2f}%")
-
-# Show Model Performance under an expander
+# Expander for Model Performance
 with st.expander("Model Performance"):
-    st.subheader("Model Performance")
-    st.write("Confusion Matrix: This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
-    conf_matrix = confusion_matrix(y_test, y_pred)
+    st.subheader("Confusion Matrix")
+    st.write("This matrix shows how many times the model correctly and incorrectly predicted outcomes.")
+    conf_matrix = confusion_matrix(y_test, best_model.predict(X_test_scaled))
     fig, ax = plt.subplots(figsize=(6, 6))
     sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax)
     ax.set_xlabel("Predicted")
@@ -100,16 +99,17 @@ bmi = st.sidebar.number_input("BMI (Body Mass Index, a measure of body fat)", mi
 dpf = st.sidebar.number_input("Diabetes Pedigree Function (A measure of family history of diabetes)", min_value=0.0, max_value=2.5, value=0.5, step=0.01)
 age = st.sidebar.number_input("Age (Age of the patient)", min_value=18, max_value=120, value=30, step=1)
 
-# Display the input values in the main page
-st.write(f"### Patient Input Data:")
-st.write(f"- Pregnancies: {pregnancies}")
-st.write(f"- Glucose: {glucose}")
-st.write(f"- Blood Pressure: {blood_pressure}")
-st.write(f"- Skin Thickness: {skin_thickness}")
-st.write(f"- Insulin: {insulin}")
-st.write(f"- BMI: {bmi}")
-st.write(f"- Diabetes Pedigree Function: {dpf}")
-st.write(f"- Age: {age}")
+# Display the input values in a collapsible section (expander)
+with st.expander("Patient Input Data"):
+    st.write(f"### Patient Input Data:")
+    st.write(f"- Pregnancies: {pregnancies}")
+    st.write(f"- Glucose: {glucose}")
+    st.write(f"- Blood Pressure: {blood_pressure}")
+    st.write(f"- Skin Thickness: {skin_thickness}")
+    st.write(f"- Insulin: {insulin}")
+    st.write(f"- BMI: {bmi}")
+    st.write(f"- Diabetes Pedigree Function: {dpf}")
+    st.write(f"- Age: {age}")
 
 # Creating a DataFrame from the inputs
 user_input = np.array([[pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age]])
