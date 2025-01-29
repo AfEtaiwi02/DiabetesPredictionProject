@@ -26,7 +26,7 @@ df = load_data()
 sections_to_show = st.multiselect(
     "Select sections to view",
     ["Dataset Overview", "Dataset Summary", "Missing Values", "Best Model Hyperparameters", "Model Performance"],
-    default=["Dataset Overview", "Dataset Summary", "Missing Values", "Best Model Hyperparameters", "Model Performance"]
+    default=[]  # No sections are displayed by default
 )
 
 # Show Dataset Overview if selected
