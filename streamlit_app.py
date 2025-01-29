@@ -1,3 +1,4 @@
+import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -13,10 +14,8 @@ st.info('Welcome! This tool helps predict whether a patient might have diabetes 
 @st.cache_data
 def load_model_and_scaler():
     # Load trained Logistic Regression model and the scaler
-    model = LogisticRegression(max_iter=200)
-    model.load("logistic_regression_model.pkl")  # Assuming you saved the trained model
-    scaler = StandardScaler()
-    scaler.load("scaler.pkl")  # Assuming you saved the scaler after fitting it on the training data
+    model = joblib.load("logistic_regression_model.pkl")  # Load the trained model
+    scaler = joblib.load("scaler.pkl")  # Load the scaler
     return model, scaler
 
 model, scaler = load_model_and_scaler()
